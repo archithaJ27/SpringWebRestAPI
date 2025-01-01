@@ -1,19 +1,33 @@
 package com.archi.SpringWebRestAPI.Controller;
 
 import com.archi.SpringWebRestAPI.dto.EmployeeDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.archi.SpringWebRestAPI.entities.EmpEntity;
+import com.archi.SpringWebRestAPI.repositories.EmpRepo;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping(path="/employee")
 public class EmployeeController {
+    private final EmpRepo empRepo;
+
+    public EmployeeController(EmpRepo empRepo) {
+        this.empRepo = empRepo;
+    }
 
     @GetMapping("/{empId}")
-    public EmployeeDTO getEmployeeId(@PathVariable(name="empId") Long id){
-        return new EmployeeDTO(id,"rakesh","archithajanjitala@gmail.com",24,LocalDate.of(2024,12,31),true);
+    public EmpEntity getEmployeeId(@PathVariable(name="empId") Long id){
+        return empRepo.findById(id).orElse(null);
+    }
+
+    @GetMapping
+    public List<EmpEntity> getAllEmployees(){
+        return empRepo.findAll();
+    }
+    @PostMapping
+    public EmpEntity addEmployee(@RequestBody EmpEntity inputDto){
+        return empRepo.save(inputDto);
     }
 }
